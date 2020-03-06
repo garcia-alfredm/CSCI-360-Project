@@ -1,0 +1,116 @@
+.LC0:
+	.string "Please enter an integer: "
+main():
+push    rbp
+        mov     rbp, rsp
+        sub     rsp, 48
+        mov     DWORD PTR [rbp-4], 0 ;for int i = 0
+.L1:
+        cmp     DWORD PTR [rbp-4], 9 ;i<10
+        jg      .L2
+	mov     esi, OFFSET FLAT:.LC0
+       	out	esi
+	in	eax, DWORD PTR [1000]	;input from keyboard
+        mov     DWORD PTR [rbp-48+rax*4], eax
+        mov     eax, DWORD PTR [rbp-4] 	;find_Max_and_Min(array, i + 1);
+        add     eax, 1			;i+1
+        mov     DWORD PTR [rbp-8], eax	
+        lea     rdx, [rbp-8]		;parameter 2
+        lea     rax, [rbp-48]		;parameter 1
+        mov     rsi, rdx
+        mov     rdi, rax
+        call    find_Max_and_Min(int*, int const&)
+        add     DWORD PTR [rbp-4], 1
+        jmp     .L1
+.L2:
+        mov     eax, 0	
+        leave		; return 0
+        ret		
+.LC1:
+        .string "Max: "
+.LC2:
+        .string "\nMin: "
+.LC3:
+        .string "\n"
+find_Max_and_Min(int*, int const&):
+        push    rbp
+        mov     rbp, rsp
+        sub     rsp, 32
+        mov     QWORD PTR [rbp-24], rdi
+        mov     QWORD PTR [rbp-32], rsi
+        mov     DWORD PTR [rbp-8], 0
+;for loop start
+        mov     DWORD PTR [rbp-12], 0 ; i = 0;
+.L10:	
+        mov     rax, QWORD PTR [rbp-32]
+        mov     eax, DWORD PTR [rax]
+        cmp     DWORD PTR [rbp-12], eax ;if(i>=size)
+        jge     .L6	#break loop
+        cmp     DWORD PTR [rbp-12], 0 	;if(i==0)
+        jne     .L7	
+        mov     eax, DWORD PTR [rbp-12]	;start max = array[i]
+        cdqe	
+        lea     rdx, [0+rax*4]
+        mov     rax, QWORD PTR [rbp-24]
+        add     rax, rdx
+        mov     eax, DWORD PTR [rax]
+        mov     DWORD PTR [rbp-4], eax	
+        mov     eax, DWORD PTR [rbp-12]	;start min = array[i]
+        cdqe
+        lea     rdx, [0+rax*4]
+        mov     rax, QWORD PTR [rbp-24]
+        add     rax, rdx
+        mov     eax, DWORD PTR [rax]
+        mov     DWORD PTR [rbp-8], eax ;end min = array[i]
+        jmp     .L8 
+.L7:
+        mov     eax, DWORD PTR [rbp-12]	;start if(array[i] > max)
+        cdqe
+        lea     rdx, [0+rax*4]
+        mov     rax, QWORD PTR [rbp-24]
+        add     rax, rdx
+        mov     eax, DWORD PTR [rax]
+        cmp     DWORD PTR [rbp-4], eax	
+        jge     .L9
+        mov     eax, DWORD PTR [rbp-12]	;start max = array[i]
+        cdqe
+        lea     rdx, [0+rax*4]
+        mov     rax, QWORD PTR [rbp-24]
+        add     rax, rdx
+        mov     eax, DWORD PTR [rax]
+        mov     DWORD PTR [rbp-4], eax	;end max = array[i]
+        jmp     .L8
+.L9:
+        mov     eax, DWORD PTR [rbp-12]	;start if(array[i] < min)
+        cdqe
+        lea     rdx, [0+rax*4]
+        mov     rax, QWORD PTR [rbp-24]
+        add     rax, rdx
+        mov     eax, DWORD PTR [rax]
+        cmp     DWORD PTR [rbp-8], eax
+        jle     .L8
+        mov     eax, DWORD PTR [rbp-12]	;start min = array[i]
+        cdqe
+        lea     rdx, [0+rax*4]
+        mov     rax, QWORD PTR [rbp-24]
+        add     rax, rdx
+        mov     eax, DWORD PTR [rax]
+        mov     DWORD PTR [rbp-8], eax	;end min = array[i]
+.L8:
+        add     DWORD PTR [rbp-12], 1
+        jmp     .L10
+; for loop end
+.L6:
+        mov     eax, OFFSET FLAT:.LC1
+	out 	eax
+        mov     eax, DWORD PTR [rbp-4]
+        out	eax
+	mov     eax, OFFSET FLAT:.LC2
+	out 	eax
+        mov     eax, DWORD PTR [rbp-8]
+        out	eax
+	mov     eax, OFFSET FLAT:.LC3
+	out 	eax
+        nop	;return void
+        leave
+        ret
