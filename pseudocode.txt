@@ -53,11 +53,11 @@ function convertToAssembly(string cpp){
 		else if isElse(line){ //else if will be handled on next line
 			removeLastLine()
 			writeJump(lableNum) //writes a jump instrunction before the last lable to skip the else statment
+			labelNumberStack.push (labelNum) //lable to be written after the else statment
 			lableNum--
 			writeLable(lableNum) //this is the lable to jump to the else statment when false
-			labelNum ++
-			labelNumberStack.push (labelNum)
-			labelNum++
+			labelNum +=2
+
 			nestedStatementStack.push("else")
 			if hasNoOpenBracket(line){
 				NestedStatementStack.push(“no brackets”)
