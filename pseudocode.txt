@@ -1,0 +1,110 @@
+Below is the top level pseudocode for the conversion from c++ to assembly.
+There is no recurrsion here like the instructor suggested, instead stacks are used.
+There is much to be implemented here but should be straight forward from here.
+function convertToAssembly(string cpp) takes the entire c++ text.
+It then gets read line by line and handled according to the type of line it is.
+A line is not necessarily a line of code but in some cases a part of a line of code that will need to be handled by the compiler.
+-a line may be the header of a function "public int fun1(int a, int b){"
+-or is just the else keyword with or without open bracket
+-or is an if statment "if(a==b)" with or without open bracket
+-or is a for loop statment "for(int i = 0; i < 5; i++)" with or without open bracket
+-or is an instuction "int a = b;"
+-or is a close bracker "}"
+-or empty meaning end of c++ code.
+-no other types of lines are handled in this code for example while loops or not handled, but this is a start to serve as a template.
+
+things to be implemented are:
+string readFirstLine(string cpp) - returns the first line of the c++ code as defined above
+string removeFirstLine(string cpp) - returns the c++ code without the first line
+int getMemSize(string cpp) - gets the number of variabls from the first function found
+void writeFunctionHeader(string line, int memSize) - writes the function header, allocates memory, and stores parameters in assembly code
+string getReturnType(string line) - returns the return type of a function header line
+boolean isElse(string line) - checks if the line is an else keyword
+void removeLastLine() - removes the last line in the assembly code
+void writeJump(int lableNum) - writes the jm instruction to the given lable number in assembly code
+void writeLable(int lableNum) - writes the lable of the given lable number in assembly code
+boolean hasNoOpenBracket(string line) - checks if there is an open bracket at the end of the line
+boolean isIfStatement(string line) - checks if line is an if statment
+void writeIfStatment(string line, int lableNum) - writes the if statment in assembly code
+bool isForLoop(string line) - checks if line is a for loop
+void writeForLoop(string line, int lableNum) - writes the for loop condition and lable in assembly code
+void writeIncrement(string increment) - writes the for loop increment in assembly code
+boolean isInstruction(string line) - checks if line is instruction
+void writeInstruction(string line) - writes the instruction in assembly code
+void WriteEndOfFunction(string returnType) - writes the end of function in assembly code
+
+
+function convertToAssemblyFromCPPTextArea(){ 
+	String cpp  = inputFromCPPTextArea
+	ConvertToAssembly(cpp) 
+} 
+function convertToAssembly(string cpp){ 
+	int labelNum = 0
+	string return type
+	stack labelNumberStack 
+	stack nestedStatementStack 
+	stack forLoopIncrentStack 
+	string line = readFirstLine(cpp) 
+	while isNotEmpty(line){ 
+		If isFunctionHeader(line){ 
+			memSize= getMemSize(cpp) 
+			writeFunctionHeader(line, memSize)
+			returnType = getReturnType(line) 
+		else if isElse(line){ //else if will be handled on next line
+			removeLastLine()
+			writeJump(lableNum) //writes a jump instrunction before the last lable to skip the else statment
+			lableNum--
+			writeLable(lableNum) //this is the lable to jump to the else statment when false
+			labelNum += 2
+			nestedStatementStack.push("else")
+			if hasNoOpenBracket(line){
+				NestedStatementStack.push(“no brackets”)
+			}
+		else if isIfStatement(line){ 
+			writeIfStatment(line, lableNum) 
+			nestedStatementStack.push(“if statement”) //records the last open statement 
+			labelNumberStack.push (labelNum)
+			labelNum++
+			if hasNoOpenBracket(line){
+				NestedStatementStack.push(“no brackets”)
+			}
+		}else if isForLoop(line){ 
+			writeForLoop(line, lableNum) //writes the for loop condition	
+			nestedStatementStack.push(“for loop”)	//records the last open statement 	
+			labelNumberStack.push (labelNum) 
+			labelNum++
+			forLoopIncrentStak.push getForLoopInrement(line)  //records the increment to be written later
+			if hasNoOpenBracket(line){
+				NestedStatementStack.push(“no brackets”)
+			}
+		}else if isInstruction(line){ 
+			writeInstruction(line)
+			while( nestedStatementStack is "no brakets"){
+				NestedStatementStack.pop()
+				If nestedStatementStack is “for loop”{ 
+					writeIncrement(forLoopIncrentStack.pop()) 
+				} 
+				WriteLabel(labelNumberStack.pop()) //writes the last label from the stack 
+				NestedStatementStack.pop()	//removes the last statement from the stack
+			} 
+		}else if isCloseBracket(line){ 
+			If nestedStatementStack is not empty{ 
+				If nestedStatementStack is “for loop”{
+					writeIncrement(forLoopIncrentStack.pop) 
+				} 
+				WriteLabel(labelNumberStack.pop()) //writes the last label from the stack 
+				NestedStatementStack.pop()	//removes the last statement from the stack
+				while( nestedStatementStack is "no brakets"){	//for when a statment with no brackets had a nested statment with no brackets
+					NestedStatementStack.pop()
+					If nestedStatementStack is “for loop”{ 
+						writeIncrement(forLoopIncrentStack.pop()) 
+					} 
+						WriteLabel(labelNumberStack.pop()) //writes the last label from the stack 
+						NestedStatementStack.pop()	//removes the last statement from the stack
+				} 
+			} else{ 
+				WriteEndOfFunction(function return type)	//no nested statement means end of function 
+			}
+		}
+	}//end while
+} 
