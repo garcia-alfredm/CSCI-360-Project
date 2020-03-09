@@ -44,6 +44,7 @@ function convertToAssembly(string cpp){
 	stack labelNumberStack 
 	stack nestedStatementStack 
 	stack forLoopIncrentStack 
+	stack loopJumpStack
 	string line = readFirstLine(cpp) 
 	while isNotEmpty(line){ 
 		If isFunctionHeader(line){ 
@@ -71,9 +72,12 @@ function convertToAssembly(string cpp){
 				NestedStatementStack.push(“no brackets”)
 			}
 		}else if isForLoop(line){ 
+			writeLable(labelNum)	//writes the loop lable
+			loopJumpStack.push(labelNum)	//puts the loop lable on the stack
+			labelNum++
 			writeForLoop(line, lableNum) //writes the for loop condition	
-			nestedStatementStack.push(“for loop”)	//records the last open statement 	
-			labelNumberStack.push (labelNum) 
+			nestedStatementStack.push(“for loop”)	//records the last open statement 
+			labelNumberStack.push (labelNum)	
 			labelNum++
 			forLoopIncrentStak.push getForLoopInrement(line)  //records the increment to be written later
 			if hasNoOpenBracket(line){
@@ -85,6 +89,7 @@ function convertToAssembly(string cpp){
 				NestedStatementStack.pop()
 				If nestedStatementStack is “for loop”{ 
 					writeIncrement(forLoopIncrentStack.pop()) 
+					writeJump(loopJumpStack.pop()) 
 				} 
 				WriteLabel(labelNumberStack.pop()) //writes the last label from the stack 
 				NestedStatementStack.pop()	//removes the last statement from the stack
@@ -93,13 +98,15 @@ function convertToAssembly(string cpp){
 			If nestedStatementStack is not empty{ 
 				If nestedStatementStack is “for loop”{
 					writeIncrement(forLoopIncrentStack.pop) 
+					writeJump(loopJumpStack.pop()) 
 				} 
 				WriteLabel(labelNumberStack.pop()) //writes the last label from the stack 
 				NestedStatementStack.pop()	//removes the last statement from the stack
 				while( nestedStatementStack is "no brakets"){	//for when a statment with no brackets had a nested statment with no brackets
 					NestedStatementStack.pop()
 					If nestedStatementStack is “for loop”{ 
-						writeIncrement(forLoopIncrentStack.pop()) 
+						writeIncrement(forLoopIncrentStack.pop())
+						writeJump(loopJumpStack.pop()) 
 					} 
 						WriteLabel(labelNumberStack.pop()) //writes the last label from the stack 
 						NestedStatementStack.pop()	//removes the last statement from the stack
