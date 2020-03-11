@@ -3,6 +3,7 @@
 ## Goals
 - [x] Solve original problem in high level source code such as C++
 - [x] Provide an assembly language equivalent to the C++ source code
+- [x] Draft pseudocode of the C++ to assembly algorithm
 - [ ] Annotate Xiaojie's original source code of the demo to grasp how the HTML and JS interact dynamically (In Progress)
 - [ ] Devise a JS parser algorithm to convert the C++ code into assembly language (In Progress)
 
