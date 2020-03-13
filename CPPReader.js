@@ -28,5 +28,23 @@ var getFirstLine = function(cppCode){
 }
 
 var removeFirstLine = function(cppCode){
+    cppCode = cppCode.replace(/^\s+/g, ""); //removes leading whitspace
     cppCode = cppCode.replace(getFirstLine(cppCode),"");
+    return cppCode;
+}
+
+var getLineType = function(line){
+    if(ifRegEx.test(line)){
+        return 'if statment';
+    }else if(elseRegEx.test(line)){
+        return 'else statment';
+    }else if(ifRfunctionHeaderRegExgEx.test(line)){
+        return 'function header';
+    }else if(regexEnum.forLoopRegEx.test(line)){
+        return 'for loop';
+    }else if(closeBracketRegEx.test(line)){
+        return 'close bracket';
+    }else if(instructionRegEx.test(line)){
+        return 'instruction';
+    }else return 'empty';
 }
