@@ -14,15 +14,15 @@ var getFirstLine = function (cppCode) {
 	cppCode = cppCode.replace(/^\s+/g, ""); //removes leading whitspace
 	if (cppCode.search(ifRegEx) == 0) {
 		return ifRegEx.exec(cppCode)[0];
-	} else if (cppCode.search(elseRegEx)) {
+	} else if (cppCode.search(elseRegEx) == 0) {
 		return elseRegEx.exec(cppCode)[0];
-	} else if (cppCode.search(functionHeaderRegEx)) {
+	} else if (cppCode.search(functionHeaderRegEx) == 0) {
 		return functionHeaderRegEx.exec(cppCode)[0];
-	} else if (cppCode.search(forLoopRegEx)) {
+	} else if (cppCode.search(forLoopRegEx) == 0) {
 		return forLoopRegEx.exec(cppCode)[0];
-	} else if (cppCode.search(closeBracketRegEx)) {
+	} else if (cppCode.search(closeBracketRegEx) == 0) {
 		return closeBracketRegEx.exec(cppCode)[0];
-	} else if (cppCode.search(instructionRegEx)) {
+	} else if (cppCode.search(instructionRegEx) == 0) {
 		return instructionRegEx.exec(cppCode)[0];
 	} else return "";
 }
