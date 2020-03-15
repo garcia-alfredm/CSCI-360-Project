@@ -5,8 +5,8 @@ var functionHeaderRegEx = /(\w+\s+)?\w+\s+\w+\s*\(\s*\w+\s+\w+\s*(,\s*\w+\s+\w+\
 //and "(" with any number of white space and any number of parameters (any word with at least one white space and anyword 
 //with any number of white space) separated by ","and ")" and any number of white space and "{"
 var forLoopRegEx = /for\s*(.*)\s*\{?/; //matches for(anyting) and optional "{"
-var instructionRegEx = /.*;/; //matches anything ending with ";"
-//only useful when all other regular expressions failed
+var instructionRegEx = /.*;/; 	//matches anything ending with ";"
+								//only useful when all other regular expressions failed
 var closeBracketRegEx = /\}/;
 
 var getFirstLine = function (cppCode) {
