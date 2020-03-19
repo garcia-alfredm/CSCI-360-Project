@@ -32,3 +32,6 @@ Ask user to continuously input random integers until the number of entered reach
 
 ## Helpful Links
 - [Xiiaojie's Demo](http://47.89.179.142/demo)
+- [Software Engineering Basics](https://softwareengineering.stackexchange.com/)
+- [Write an Assembler in C](https://softwareengineering.stackexchange.com/questions/324587/write-an-assembler-in-c-why-writing-a-machine-code-translator-for-a-low-level)
+- [Building a Compiler](https://compilers.iecc.com/crenshaw/)
