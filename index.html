@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>CSCI 360 Project Demo</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="demo.js"></script>
+  <script src="opcode.js"></script>
+  <script src="variables.js"></script>
+  <script src="CPPReader.js" type="text/javascript">
+
+  </script>
+</head>
+
+
+<body>
+  <!-- C++ panel -->
+  <div class="container">
+     <div class="col-sm-12" style="padding:5px">
+       <div class="panel panel-primary">
+         <div class="panel-heading">C++ Code</div>
+         <div class="panel-body" style>
+           <div class="panel-body" style="padding-top:0px;padding-bottom:0px;">
+             <div class="row">
+               <div class="col-sm-12">
+                 <textarea style="max-height:500px;overflow:scroll;font-size:20px;" class="form-control" rows="25" id="assemblyCode">
+#include <iostream>
+
+void find_Max_and_Min(int * array, const int & size);
+
+int main(){
+   int array[10];
+
+   for(int i = 0; i < 10; ++i){
+       std::cout << "Please enter an integer: ";
+       std::cin >> array[i];
+       find_Max_and_Min(array, i + 1);
+   }
+   return 0;
+}
+
+void find_Max_and_Min(int * array, const int & size){
+   int max, min = 0;
+
+   for(int i = 0; i < size; ++i){
+       /*First element is assigned to min and max */
+       if(i == 0){
+           max = array[i];
+           min = array[i];
+       }
+       else if(array[i] > max){
+           max = array[i];
+       }
+       else if(array[i] < min){
+           min = array[i];
+       }
+   }
+   std::cout << "Max: " << max << "\nMin: " << min << std::endl;
+   return;
+}
+                 </textarea>
+               </div>
+              </div>
+            </div>
+         </div>
+       </div>
+     </div>
+  </div>
+  <!-- End of C++ function -->
+  
+  <div class="container">
+    <!-- All panels are stored within in this div  -->
+    <div class="panel panel-primary">
+      <div class="panel-body" style="padding-top:0px;">
+        <div class="row">
+          <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
+          <!-- First half of the div panel (including assembly instruction panel/function table/tips) -->
+          <div class="col-sm-6" style="padding:5px;">
+            <div class="panel panel-primary">
+              <div class="panel-heading">Assembly Instruction Panel</div>
+              <div class="panel-body" style="padding-top:0px;padding-bottom:0px;">
+                <div class="row">
+                  <!-- Div of 12 units to store the text area -->
+                  <div class="col-xs-12">
+                    <!-- The <textarea> represents a multi-line plain-text editing control, useful when you want to
+                    allow users to enter a sizeable amount of free-form text, for example a comment on a review or feedback form. -->
+                    <textarea style="max-height:500px;overflow:scroll;font-size:20px;" class="form-control" rows="25" id="assemblyCode">fun_1(int, int, int, int, int, int, int, int, int):
+        push    rbp
+        mov     rbp, rsp
+        mov     DWORD PTR [rbp-4], edi
+        mov     DWORD PTR [rbp-8], esi
+        mov     DWORD PTR [rbp-12], edx
+        mov     DWORD PTR [rbp-16], ecx
+        mov     DWORD PTR [rbp-20], r8d
+        mov     DWORD PTR [rbp-24], r9d
+        mov     eax, 70
+        pop     rbp
+        ret
+main:
+        push    rbp
+        mov     rbp, rsp
+        push    9
+        push    8
+        push    7
+        mov     r9d, 6
+        mov     r8d, 5
+        mov     ecx, 4
+        mov     edx, 3
+        mov     esi, 2
+        mov     edi, 1
+        call    fun_1(int, int, int, int, int, int, int, int, int)
+        add     rsp, 24
+        mov     eax, 0
+        leave
+        ret</textarea>
+                    <!-- Div that holds the assembly instruction panel -->
+                    <div style="max-height:500px;overflow:scroll;font-size:20px;" hidden id="address_code">
+                      <!-- Table of assembly instruction panel -->
+                      <table class="table">
+                        <!-- The <thead> defines a set of rows defining the head of the columns of the table. -->
+                        <!-- Adding a header to the table -->
+                        <thead>
+                          <!-- In one table row -->
+                          <tr style="text-align:center;">
+                            <!-- The <th> defines a cell as header of a group of table cells -->
+                            <th width="20%">Address</th>
+                            <th width="80%">Instruction</th>
+                          </tr>
+                        </thead>
+                        <!-- Will be populated as the JavaScript code is implemented -->
+                        <!-- Most likely <tr id="code_1000"> and so on -->
+                        <tbody id="address_code_table">
+
+                        </tbody>
+                      </table>
+
+                    </div>
+
+                  </div>
+
+                </div>
+                <!-- Bottom of the textarea and table are the edit and load buttons -->
+                <div class="row" style="margin-top:10px;padding-bottom:10px;">
+                  <!-- Create space to pad/move buttons to the right -->
+                  <div class="col-xs-8"></div>
+                  <!-- Buttons will be within this div (uses 4 Bootstrap units) -->
+                  <div class="col-xs-4">
+                    <!-- Execute JavaScript function edit() located in demo.js when button is clicked -->
+                    <button class="btn btn-primary" onclick="edit()">Edit</button>
+                    <!-- Execute JavaScript function load() located in demo.js when button is clicked -->
+                    <button class="btn btn-success" onclick="load()">Load</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- ************************************************************************************************************ -->
+            <!-- This will be the div handling Function Table -->
+            <div class="panel panel-primary">
+              <div class="panel-heading">Function Table</div>
+              <div class="panel-body" style="padding-top:5px;padding-bottom:5px;">
+                <div class="row">
+                  <!-- This is a table holds Function Table and tabulates the data -->
+                  <table class="table" style="margin:0px;">
+                    <!-- The <thead> defines a set of rows defining the head of the columns of the table. -->
+                    <!-- Adding a header to the table -->
+                    <thead>
+                      <!-- In one table row -->
+                      <tr>
+                        <!-- One header will state Function -->
+                        <th>Function</th>
+                        <!-- Another header will state Table -->
+                        <th>Address</th>
+                      </tr>
+                    </thead>
+                    <!-- tbody will be populated with something like: <td>fun_1(int, int, int, int, int, int, int, int, int)</td> as JavaScript code executes -->
+                    <!-- document.querySelector("#function_address_table > tr:nth-child(1) > td:nth-child(1)") -->
+                    <!-- JS Path: document.querySelector("#function_address_table") -->
+                    <tbody id="function_address_table" style="max-height:200px;overflow:scroll;font-size:20px;">
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- ************************************************************************************************************ -->
+            <!-- This will be the div handling Tips -->
+            <div class="panel panel-primary">
+              <div class="panel-heading">Tips</div>
+              <div class="panel-body">
+                <!-- In one row -->
+                <div class="row">
+                  <!-- An entire div will take up 12 Bootstrap units -->
+                  <div class="col-xs-12" id="tips">
+                    <!-- The <pre> represents preformatted text which is to be presented exactly as written in the HTML file. The
+                     text is typically rendered using a non-proportional ("monospace") font. Whitespace inside this element is displayed as written. -->
+                    <pre>
+1. Push return address for main function, assumed <font color="red">200</font>.
+2. Push the rbp of the function that calls the main
+   function, assumed <font color="red">3000</font>.
+1. The function label does not take any action.
+2. leave = mov rsp, rbp
+	       pop rpb
+3. ret   = pop rip
+</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End of the first half of the div panel -->
+
+          <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
+          <!-- Second half of the div panel (including register panel, memory, stack) -->
+          <!-- ************************************************************************************************************ -->
+          <div class="col-sm-6" style="padding:5px;">
+            <!-- Register Panel Section -->
+            <!-- In an entire row (for Register Panel) -->
+            <div class="row">
+              <!-- One div will take up 12 Bootstrap column units -->
+              <div class="col-xs-12">
+                <!-- This will be the div handling the Register Panel -->
+                <div class="panel panel-primary">
+                  <div class="panel-heading">Register Panel - 64/32 bits (base10)
+                    <!-- Button to step/advance to next assembly instruction -->
+                    <!-- Show progression of assembly instructions -->
+                    <!-- The id for step is located in demo.js, which then calls the execute() function in demo.js as well -->
+                    <!-- JS Path for step button: document.querySelector("#step") -->
+                    <button class="btn  btn-success" id="step" style="float:right;">step</button>
+                  </div>
+                  <!-- Body of the Register Panel -->
+                  <!-- The rbp, rsp, etc. will be dynamically updated as JS code execute (which is why font tag is empty) -->
+                  <div class="panel-body" style="font-size:20px;">
+                    <!-- In the first row of the Register Panel body -->
+                    <div class="row">
+                      <!-- Rbp register -->
+                      <div class="col-xs-2"><b>rbp</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="rbp" style="background:#df9857;"></font>
+                      </div>
+                      <!-- Rsp register -->
+                      <div class="col-xs-2"><b>rsp</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="rsp" style="background:#df9857;"></font>
+                      </div>
+                      <!-- Rip register -->
+                      <div class="col-xs-2"><b>rip</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="rip" style="background:#48e17a;"></font>
+                      </div>
+                    </div>
+                    <!-- In the second row of the Register Panel body -->
+                    <div class="row">
+                      <!-- Rax/eax register -->
+                      <div class="col-xs-2"><b>rax/eax</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="rax"></font>
+                      </div>
+                      <!-- Rbx,ebx register-->
+                      <div class="col-xs-2"><b>rbx/ebx</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="rbx"></font>
+                      </div>
+                      <!-- Rdi, edi register-->
+                      <div class="col-xs-2"><b>rdi/edi</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="rdi"></font>
+                      </div>
+                    </div>
+                    <!-- In the third row of the Register Panel body -->
+                    <div class="row">
+                      <!-- Rsi/esi register -->
+                      <div class="col-xs-2"><b>rsi/esi</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="rsi"></font>
+                      </div>
+                      <!-- Rdx/edx register -->
+                      <div class="col-xs-2"><b>rdx/edx</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="rdx"></font>
+                      </div>
+                      <!-- Rcx/ecx register -->
+                      <div class="col-xs-2"><b>rcx/ecx</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="rcx"></font>
+                      </div>
+                    </div>
+                    <!-- In the fourth row of the Register Panel body -->
+                    <div class="row">
+                      <!-- r8/r8d register -->
+                      <div class="col-xs-2"><b>r8/r8d</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="r8"></font>
+                      </div>
+                      <!-- r9/r9d register -->
+                      <div class="col-xs-2"><b>r9/r9d</b></div>
+                      <div class="col-xs-2" style="padding-left:10pt;">
+                        <font id="r9"></font>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ************************************************************************************************************ -->
+            <!-- Stack Panel section -->
+            <!-- In an entire row -->
+            <div class="row">
+              <!-- The row will take up 12 Bootstrap column units -->
+              <div class="col-xs-12">
+                <div class="panel panel-primary">
+                  <!-- This will be the div handling the Stack Panel -->
+                  <div class="panel-heading">Stack Panel</div>
+                  <!-- Within the body of the Stack Panel -->
+                  <div class="panel-body">
+                    <div class="row">
+                      <table class="table" style="margin:0px;">
+                        <!-- Header of the table -->
+                        <thead>
+                          <tr>
+                            <th width="33%" style="text-align:center;">&nbsp;&nbsp;Address</th>
+                            <th width="33%" style="text-align:center;">&nbsp;&nbsp;Content</th>
+                            <th width="33%" style="text-align:center;">&nbsp;&nbsp;Label</th>
+                          </tr>
+                        </thead>
+                      </table>
+                      <!-- Body of the table -->
+                      <div style="height:350px;overflow-y:scroll;">
+                        <table class="table" style="margin:0px;font-size: 20px;">
+                          <!-- Table body will dynamically update with stack table contents-->
+                          <!-- Example of what will be in table body:
+                              <td width="33%">1992</td>
+                              <td width="33%">3000</td>
+                              <td width="33%" style="vertical-align: middle;">
+                                <font style="background:#df9857;font-size:15pt;"> rsp</font>
+                              </td>
+
+                              Which renders to: Address 1992, Content 3000, Label rsp -->
+                          <tbody id="stack_table" style='text-align:center;'>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ************************************************************************************************************ -->
+            <!-- Memory section -->
+            <!-- In an entire row -->
+            <div class="row">
+              <!-- The row will take up 12 Bootstrap column units -->
+              <div class="col-xs-12">
+                <div class="panel panel-primary">
+                  <!-- This will be the div handling the Memory panel -->
+                  <div class="panel-heading">Memory</div>
+                  <div class="panel-body" style="height:120px;overflow:scroll;">
+                    <div class="row">
+                      <div class="col-xs-12">add your memory data here</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End of the second half div panel -->
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Miscellaneous -->
+    <div class="row" style="text-align:center;">
+      <div>@ Xiaojie Zhang</div>
+      <div>This web-tool is only for education purpose.</div>
+    </div>
+
+  </div>
+
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="demo.js"></script>
+<script src="opcode.js"></script>
+<script src="variables.js"></script> -->
+
+</body>
+
+</html>
