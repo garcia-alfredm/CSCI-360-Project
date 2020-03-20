@@ -109,7 +109,7 @@ var cppToAssembly = function convertToAssembly(cppCode) {
 			}
 		} else if (lineType == 'instruction') {
 			result.concat('\n').concat(writeInstruction(line));
-			while (nestedStatementStack.lastIndexOf('no brakets') == (nestedStatementStack.length - 1)) {
+			while (nestedStatementStack.lastIndexOf('no brackets') == (nestedStatementStack.length - 1)) {
 				nestedStatementStack.pop();
 				If(nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
 					result.concat('\n').concat(writeIncrement(forLoopIncrentStack.pop()));
@@ -126,7 +126,7 @@ var cppToAssembly = function convertToAssembly(cppCode) {
 				}
 				result.concat('\n').concat(WriteLabel(labelNumberStack.pop()));
 				nestedStatementStack.pop();
-				while (nestedStatementStack.lastIndexOf('no brakets') == (nestedStatementStack.length - 1)) {
+				while (nestedStatementStack.lastIndexOf('no brackets') == (nestedStatementStack.length - 1)) {
 					nestedStatementStack.pop();
 					If(nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
 						result.concat('\n').concat(writeIncrement(forLoopIncrentStack.pop));
