@@ -17,16 +17,17 @@
 
 
 <body>
-  <!-- C++ panel -->
+  <!-- Our container separate from the professor -->
   <div class="container">
-     <div class="col-sm-12" style="padding:5px">
+    <!-- C++ panel -->
+     <div class="col-sm-6" style="padding:5px">
        <div class="panel panel-primary">
          <div class="panel-heading">C++ Code</div>
          <div class="panel-body" style>
            <div class="panel-body" style="padding-top:0px;padding-bottom:0px;">
              <div class="row">
-               <div class="col-sm-12">
-                 <textarea style="max-height:500px;overflow:scroll;font-size:20px;" class="form-control" rows="25" id="assemblyCode">
+               <div class="col-xs-12">
+                 <textarea style="max-height:500px;overflow:scroll;font-size:20px;" class="form-control" rows="25" id="cppCode">
 #include <iostream>
 
 void find_Max_and_Min(int * array, const int & size);
@@ -68,9 +69,28 @@ void find_Max_and_Min(int * array, const int & size){
          </div>
        </div>
      </div>
+
+    <!-- Translated Assembly Code Panel -->
+     <div class="col-sm-6" style="padding:5px">
+       <div class="panel panel-primary">
+         <div class="panel-heading">Translated Assembly Code</div>
+         <div class="panel-body" style>
+           <div class="panel-body" style="padding-top:0px;padding-bottom:0px;">
+             <div class="row">
+               <div class="col-xs-12">
+                 <textarea style="max-height:500px;overflow:scroll;font-size:20px;" class="form-control" rows="25" id="translateAssemblyCode">
+                 </textarea>
+               </div>
+              </div>
+            </div>
+         </div>
+       </div>
+     </div>
+     
   </div>
+
   <!-- End of C++ function -->
-  
+
   <div class="container">
     <!-- All panels are stored within in this div  -->
     <div class="panel panel-primary">
