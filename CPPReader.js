@@ -54,7 +54,7 @@ var test = function regExTest(cppCode){
 	readFirstLine(cppCode);
 	while (line.length != 0) {
 		var lineType = getLineType(line);
-		result.concat(lineType).concat('\t').concat(line);
+		result.concat(lineType).concat('\t').concat(line).concat('\n');
 		cppCode = cppCode.replace(line,'');
 		line = readFirstLine(cppCode);
 	}
