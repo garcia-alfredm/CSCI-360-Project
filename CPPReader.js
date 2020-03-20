@@ -98,13 +98,13 @@ function convertToAssembly(cppCode) {
 		} else if (lineType == 'instruction') {
 			writeInstruction(line);
 			while (nestedStatementStack.lastIndexOf('no brakets') == (nestedStatementStack.length - 1)) {
-				NestedStatementStack.pop();
+				nestedStatementStack.pop();
 				If(nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
 					writeIncrement(forLoopIncrentStack.pop());
 					writeJump(loopJumpStack.pop());
 				}
 				WriteLabel(labelNumberStack.pop());
-				NestedStatementStack.pop();
+				nestedStatementStack.pop();
 			}
 		} else if (lineType == 'close bracket') {
 			If(nestedStatementStack.length > 0) {
@@ -112,16 +112,16 @@ function convertToAssembly(cppCode) {
 					writeIncrement(forLoopIncrentStack.pop);
 					writeJump(loopJumpStack.pop());
 				}
-				WriteLabel(labelNumberStack.pop())
-				NestedStatementStack.pop()
+				WriteLabel(labelNumberStack.pop());
+				nestedStatementStack.pop();
 				while (nestedStatementStack.lastIndexOf('no brakets') == (nestedStatementStack.length - 1)) {
-					NestedStatementStack.pop()
+					nestedStatementStack.pop();
 					If(nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
 						writeIncrement(forLoopIncrentStack.pop);
 						writeJump(loopJumpStack.pop());
 					}
 					WriteLabel(labelNumberStack.pop())
-					NestedStatementStack.pop()
+					nestedStatementStack.pop();
 				}
 			}else {
 				WriteEndOfFunction(returnType)	//no nested statement means end of function 
