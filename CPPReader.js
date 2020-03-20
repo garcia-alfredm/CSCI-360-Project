@@ -48,7 +48,18 @@ var getLineType = function (line) {
 		return 'instruction';
 	} else return 'empty';
 }
-
+var test = function regExTest(cppCode){
+	var line = '';
+	var result = '';
+	readFirstLine(cppCode);
+	while (line.length != 0) {
+		var lineType = getLineType(line);
+		result.concat(lineType).concat('\t').concat(line);
+		cppCode = cppCode.replace(line,'');
+		line = readFirstLine(cppCode);
+	}
+	return result;
+}
 var cppToAssembly = function convertToAssembly(cppCode) {
 	var result = '';
 	var lableNum = 0;
@@ -128,6 +139,8 @@ var cppToAssembly = function convertToAssembly(cppCode) {
 				result.concat('\n').concat(WriteEndOfFunction(returnType))	//no nested statement means end of function 
 			}
 		}
+		cppCode = cppCode.replace(line,'');
+		line = readFirstLine(cppCode);
 	}
 	return result;
 }
