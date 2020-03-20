@@ -49,7 +49,8 @@ var getLineType = function (line) {
 	} else return 'empty';
 }
 
-function convertToAssembly(cppCode) {
+var cppToAssembly = function convertToAssembly(cppCode) {
+	var result = '';
 	var lableNum = 0;
 	var returnType = '';
 	var labelNumberStack = [];
@@ -62,72 +63,73 @@ function convertToAssembly(cppCode) {
 		var lineType = getLineType(line);
 		if (lineType == 'function header') {
 			let memSize = getMemSize(cpp);
-			writeFunctionHeader(line, memsize);
+			result.concat('\n').concat(writeFunctionHeader(line, memSize));
 			returnType = getReturnType(line);
 		} else if (lineType == 'else') {
-			removeLastLine();
-			writeJump(lableNum);
+			result = removeLastLine(result);
+			result.concat('\n').concat(writeJump(lableNum));
 			labelNumberStack.push(lableNum);
 			lableNum--;
-			writeLable(lableNum);
+			result.concat('\n').concat(writeLable(lableNum));
 			lableNum += 2;
 			nestedStatementStack.push('else');
 			if (hasNoOpenBracket(line)) {
-				NestedStatementStack.push('no brackets');
+				nestedStatementStack.push('no brackets');
 			}
 		} else if (lineType == 'if statment') {
-			writeIfStatment(line, lableNum);
+			result.concat('\n').concat(writeIfStatment(line, lableNum));
 			nestedStatementStack.push('if statement');
 			labelNumberStack.push(labelNum);
 			labelNum++;
 			if (hasNoOpenBracket(line)) {
-				NestedStatementStack.push('no brackets')
+				nestedStatementStack.push('no brackets')
 			}
 		} else if (lineType == 'for loop') {
-			writeLable(labelNum);
+			result.concat('\n').concat(writeLable(labelNum));
 			loopJumpStack.push(labelNum);
 			labelNum++;
-			writeForLoop(line, lableNum);
+			result.concat('\n').concat(writeForLoop(line, lableNum));
 			nestedStatementStack.push('for loop');
 			labelNumberStack.push(labelNum);
 			labelNum++;
 			forLoopIncrentStak.push(getForLoopInrement(line));
 			if (hasNoOpenBracket(line)) {
-				NestedStatementStack.push('no brackets');
+				nestedStatementStack.push('no brackets');
 			}
 		} else if (lineType == 'instruction') {
-			writeInstruction(line);
+			result.concat('\n').concat(writeInstruction(line));
 			while (nestedStatementStack.lastIndexOf('no brakets') == (nestedStatementStack.length - 1)) {
 				nestedStatementStack.pop();
 				If(nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
-					writeIncrement(forLoopIncrentStack.pop());
-					writeJump(loopJumpStack.pop());
+					result.concat('\n').concat(writeIncrement(forLoopIncrentStack.pop()));
+					result.concat('\n').concat(writeJump(loopJumpStack.pop()));
 				}
-				WriteLabel(labelNumberStack.pop());
+				result.concat('\n').concat(writeLabel(labelNumberStack.pop()));
 				nestedStatementStack.pop();
 			}
 		} else if (lineType == 'close bracket') {
 			If(nestedStatementStack.length > 0) {
 				If(nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
-					writeIncrement(forLoopIncrentStack.pop);
-					writeJump(loopJumpStack.pop());
+					result.concat('\n').concat(writeIncrement(forLoopIncrentStack.pop));
+					result.concat('\n').concat(writeJump(loopJumpStack.pop()));
 				}
-				WriteLabel(labelNumberStack.pop());
+				result.concat('\n').concat(WriteLabel(labelNumberStack.pop()));
 				nestedStatementStack.pop();
 				while (nestedStatementStack.lastIndexOf('no brakets') == (nestedStatementStack.length - 1)) {
 					nestedStatementStack.pop();
 					If(nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
-						writeIncrement(forLoopIncrentStack.pop);
-						writeJump(loopJumpStack.pop());
+						result.concat('\n').concat(writeIncrement(forLoopIncrentStack.pop));
+						result.concat('\n').concat(writeJump(loopJumpStack.pop()));
 					}
-					WriteLabel(labelNumberStack.pop())
+					result.concat('\n').concat(WriteLabel(labelNumberStack.pop()))
 					nestedStatementStack.pop();
 				}
 			}else {
-				WriteEndOfFunction(returnType)	//no nested statement means end of function 
+				result.concat('\n').concat(WriteEndOfFunction(returnType))	//no nested statement means end of function 
 			}
 		}
 	}
+	return result;
 }
 
 var getForLoopInrement = function (line) {
@@ -138,22 +140,22 @@ var getForLoopInrement = function (line) {
 var hasNoOpenBracket = function (line) {
 	return !(/.*\{/.test(line));
 }
-function writeIncrement(increment) {
+var increment = function writeIncrement(increment) {
 	//TODO write the for loop increment
 }
-function writeInstruction(line) {
+var instruction = function writeInstruction(line) {
 	//TODO writes an instruction in assembly. Difficulty level hard.
 }
-function writeIfStatment(line, labelNum) {
+var ifStatment = function writeIfStatment(line, labelNum) {
 	//TODO writes the if statement condition and jump. Difficulty level: medium
 }
-function writeLable(lableNum) {
+var label = function writeLable(lableNum) {
 	//TODO write lable for the lable number
 }
-function writeJump(labelNum) {
+var jump = function writeJump(labelNum) {
 	//TODO write a jump instruction to the lable number
 }
-function removeLastLine() {
+var removedLastLine = function removeLastLine(asmCode) {
 	//TODO removes the last line of assembly code
 }
 var getReturnType = function (cppCode) {
@@ -164,6 +166,6 @@ var getMemSize = function (cppCode) {
 	//TODO return the amount of memory needed for the function. Difficulty level: hard
 	return 0;
 }
-function WriteEndOfFunction(returnType){
+var endOfFun = function WriteEndOfFunction(returnType){
 	//TODO writes the end of function depending on the return type
 }
