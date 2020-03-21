@@ -15,10 +15,8 @@
 
 Example:
 ```
-in eax, [1000]
-eax= [1000]
-out [2000], eax
-[2000] = eax
+in eax, [1000]      eax = [1000]
+out[2000], eax      [2000] = eax
 ```
 ## Project Description
 #### Test Program Set Up
