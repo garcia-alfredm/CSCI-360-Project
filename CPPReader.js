@@ -169,10 +169,10 @@ function writeIfStatment(line, labelNum) {
 	//TODO writes the if statement condition and jump. Difficulty level: medium
 	return '';
 }
-var label = function writeLable(lableNum) {
+function writeLable(lableNum) {
 	return `L${lableNum}:`;
 }
-var jump = function writeJump(labelNum) {
+function writeJump(labelNum) {
 	//TODO write a jump instruction to the lable number
 	return '';
 }
@@ -180,7 +180,7 @@ function removeLastLine(asmCode) {
 	//TODO removes the last line of assembly code
 	return '';
 }
-var getReturnType = function (cppCode) {
+function getReturnType(cppCode) {
 	//TODO check if return type is void or int or double. 
 	return 'void';
 }
