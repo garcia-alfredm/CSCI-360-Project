@@ -170,8 +170,7 @@ function writeIfStatment(line, labelNum) {
 	return '';
 }
 var label = function writeLable(lableNum) {
-	//TODO write lable for the lable number
-	return '';
+	return `L${lableNum}:`;
 }
 var jump = function writeJump(labelNum) {
 	//TODO write a jump instruction to the lable number
