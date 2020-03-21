@@ -7,14 +7,12 @@
   <title>CSCI 360 Project Demo</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  
+  <script src="CPPReader.js" ></script>
   <script src="demo.js"></script>
   <script src="opcode.js"></script>
   <script src="variables.js"></script>
-  <script src="CPPReader.js" type="text/javascript">
-
-  </script>
 </head>
-
 
 <body>
   <!-- Our container separate from the professor -->
@@ -28,10 +26,6 @@
              <div class="row">
                <div class="col-xs-12">
                  <textarea style="max-height:500px;overflow:scroll;font-size:20px;" class="form-control" rows="25" id="cppCode">
-#include <iostream>
-
-void find_Max_and_Min(int * array, const int & size);
-
 int main(){
    int array[10];
 
@@ -47,7 +41,6 @@ void find_Max_and_Min(int * array, const int & size){
    int max, min = 0;
 
    for(int i = 0; i < size; ++i){
-       /*First element is assigned to min and max */
        if(i == 0){
            max = array[i];
            min = array[i];
@@ -63,6 +56,13 @@ void find_Max_and_Min(int * array, const int & size){
    return;
 }
                  </textarea>
+                 <div class="row" style="margin-top:10px;padding-bottom:10px;">
+                  <!-- Create space to pad/move buttons to the right -->
+                  <div class="col-xs-4">
+                    <!-- Execute JavaScript function load() located in demo.js when button is clicked -->
+                    <button class="btn btn-success" onclick="convertToAsm()">Convert To Assembly Code</button>
+                  </div>
+                </div>
                </div>
               </div>
             </div>

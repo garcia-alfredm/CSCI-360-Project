@@ -208,6 +208,12 @@ var load = function() {
   $("#address_code").show();
 }
 
+var convertToAsm = function() {
+  var cppCode =  $("textArea#cppCode").val();
+  var test = regExTest(cppCode);
+  $('#translateAssemblyCode').val(test);
+}
+
 
 /*
   show assembly editor
