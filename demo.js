@@ -208,10 +208,13 @@ var load = function() {
   $("#address_code").show();
 }
 
-var convertToAsm = function() {
+var testRegExClick = function() {
   var cppCode =  $("textArea#cppCode").val();
   var test = regExTest(cppCode);
   $('#translateAssemblyCode').val(test);
+}
+var convertToAsmClick = function() {
+  $('#translateAssemblyCode').val("TODO: Implement convertToAsm() in demo.js to call convertToAssembly(cppCode) and Implement functions in CPPReader.js");
 }
 
 
