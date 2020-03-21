@@ -9,8 +9,17 @@
 
 ## Unique Specifications
 - We assume `in` and `out` as pseudo assembly level commands to read keyboard input (equivalent to `cin` and `cout` in C++)
-- The starting address of the keyboard (receiving input) and screen (displaying output) are fixed
+  - `in` - when user types/inputs 100, we have to retrieve 100 from the memory location that hold input for the keyboard and we predefine the keyboard's memory address
+  - `out` - move value 100 to the screen? The screen is an output device and 100 is a memory location, so we move 100 to the storage address of the screen
+- The starting address of the keyboard (receiving input) and screen (displaying output) are predefined/fixed
 
+Example:
+```
+in eax, [1000]
+eax= [1000]
+out [2000], eax
+[2000] = eax
+```
 ## Project Description
 #### Test Program Set Up
 Ask user to continuously input random integers until the number of entered reaches 10. Each time the user enters a new integer, the current maximum and minimum integers in the saved list are output to the screen. You can simply assume that all integers are non-negtive. You can also assume that all integers are small values and can be represented by 1 byte.
