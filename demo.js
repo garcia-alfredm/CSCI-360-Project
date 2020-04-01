@@ -215,9 +215,9 @@ var testRegExClick = function() {
 }
 var convertToAsmClick = function() {
   var cppCode =  $("#cppCode").val();
-  //var assemblyCode = convertToAssembly(cppCode);
-  $('#translateAssemblyCode').val("TODO: Implement convertToAsm() in demo.js to call convertToAssembly(cppCode) and Implement functions in CPPReader.js");
-  // $('#translateAssemblyCode').val(assemblyCode);
+  var assemblyCode = convertToAssembly(cppCode);
+  //$('#translateAssemblyCode').val("TODO: Implement convertToAsm() in demo.js to call convertToAssembly(cppCode) and Implement functions in CPPReader.js");
+   $('#translateAssemblyCode').val(assemblyCode);
 
 }
 

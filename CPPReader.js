@@ -76,7 +76,7 @@ var getLineType = function(line) {
 
 function convertToAssembly(cppCode) {
   var result = '';
-  var lableNum = 0;
+  var labelNum = 0;
   var returnType = '';
   var labelNumberStack = [];
   var nestedStatementStack = [];
@@ -90,22 +90,24 @@ function convertToAssembly(cppCode) {
     var lineType = getLineType(line); // Get the line type of the current line
 
     if (lineType == 'function header') {
-      let memSize = getMemSize(cpp);
+			console.log(line);
+      let memSize = getMemSize(cppCode);
+			console.log(memSize);
       result.concat('\n').concat(writeFunctionHeader(line, memSize));
       returnType = getReturnType(line);
     } else if (lineType == 'else') {
       result = removeLastLine(result);
-      result.concat('\n').concat(writeJump(lableNum));
-      labelNumberStack.push(lableNum);
-      lableNum--;
-      result.concat('\n').concat(writeLable(lableNum));
-      lableNum += 2;
+      result.concat('\n').concat(writeJump(labelNum));
+      labelNumberStack.push(labelNum);
+      labelNum--;
+      result.concat('\n').concat(writelabel(labelNum));
+      labelNum += 2;
       nestedStatementStack.push('else');
       if (hasNoOpenBracket(line)) {
         nestedStatementStack.push('no brackets');
       }
     } else if (lineType == 'if statment') {
-      result.concat('\n').concat(writeIfStatment(line, lableNum));
+      result.concat('\n').concat(writeIfStatment(line, labelNum));
       nestedStatementStack.push('if statement');
       labelNumberStack.push(labelNum);
       labelNum++;
@@ -113,10 +115,10 @@ function convertToAssembly(cppCode) {
         nestedStatementStack.push('no brackets')
       }
     } else if (lineType == 'for loop') {
-      result.concat('\n').concat(writeLable(labelNum));
+      result.concat('\n').concat(writelabel(labelNum));
       loopJumpStack.push(labelNum);
       labelNum++;
-      result.concat('\n').concat(writeForLoop(line, lableNum));
+      result.concat('\n').concat(writeForLoop(line, labelNum));
       nestedStatementStack.push('for loop');
       labelNumberStack.push(labelNum);
       labelNum++;
@@ -185,12 +187,12 @@ function writeIfStatment(line, labelNum) {
   return '';
 }
 
-function writeLable(lableNum) {
-  return `L${lableNum}:`;
+function writeLabel(labelNum) {
+  return `L${labelNum}:`;
 }
 
 function writeJump(labelNum) {
-  //TODO write a jump instruction to the lable number
+  //TODO write a jump instruction to the label number
   return '';
 }
 
@@ -204,12 +206,25 @@ function getReturnType(cppCode) {
   return 'void';
 }
 
-function memSize(cppCode) {
+function getMemSize(cppCode) {
   //TODO return the amount of memory needed for the function. Difficulty level: hard
-  return 0;
+	var findInitializedArray = /[A-Za-z]+\[\d+\]/;
+	var foundArray = cppCode.match(findInitializedArray);
+	// console.log(foundArray[0]);
+	var determineMemory = foundArray[0].match(/\d+/)[0];
+	var memoryNeeded = 0;
+	if(determineMemory == (0 || 1)){memoryNeeded = 16;}
+	else if (determineMemory == 3 || determineMemory == 4 || determineMemory == 5 || determineMemory == 6) {memoryNeeded = 16 * 2;}
+	else if (determineMemory == 7 || determineMemory == 8 || determineMemory == 9 || determineMemory == 10)	{memoryNeeded = 16 * 3;}
+  return memoryNeeded;
 }
 
 function WriteEndOfFunction(returnType) {
   //TODO writes the end of function depending on the return type
   return '';
 }
+
+// for 0, 1 it stayed at 16
+// 3, 4, 5, 6 stayed at 32
+// 7, 8, 9, 10 stayed at 48
+// 11, 12, 13, 14 stayed at 64
