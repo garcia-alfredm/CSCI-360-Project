@@ -209,12 +209,16 @@ var load = function() {
 }
 
 var testRegExClick = function() {
-  var cppCode =  $("textArea#cppCode").val();
-  var test = regExTest(cppCode);
+  var cppCode =  $("#cppCode").val();
+  var test = regExTest(cppCode);          // Function found in CPPReader.js
   $('#translateAssemblyCode').val(test);
 }
 var convertToAsmClick = function() {
+  var cppCode =  $("#cppCode").val();
+  //var assemblyCode = convertToAssembly(cppCode);
   $('#translateAssemblyCode').val("TODO: Implement convertToAsm() in demo.js to call convertToAssembly(cppCode) and Implement functions in CPPReader.js");
+  // $('#translateAssemblyCode').val(assemblyCode);
+
 }
 
 
