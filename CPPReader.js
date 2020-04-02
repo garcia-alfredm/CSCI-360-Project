@@ -10,7 +10,7 @@ var instructionRegEx = /.*;/; 	//matches anything ending with ";"
 var closeBracketRegEx = /\}/;
 /*
 At this point, this project is able to recognize some C++ code. Does not recognize comments or while loops. 
-Does something wierd when it reaches the end of the C++ code. It has trouble removing the last line of cppCode 
+Does something weird when it reaches the end of the C++ code. It has trouble removing the last line of cppCode 
 and I am forced to use substring(1) to removed unrecognized characters one by one. This is not ideal and a fix will be needed.
 */
 function regExTest(cppCode) {
@@ -22,7 +22,7 @@ function regExTest(cppCode) {
 		if(line.length == 0){
 			cppCode = cppCode.substring(1);	//This is a quick fix to reach the end of cppCode when a character is not recognized.
 		}
-		cppCode = cppCode.replace(line, '0');
+		cppCode = cppCode.replace(line, '');
 	}
 	return result;
 }
@@ -75,11 +75,11 @@ function convertToAssembly(cppCode) {
 	var loopJumpStack = [];
 	var line = '';
 	while (cppCode.length != 0) {
-		line = readFirstLine(cppCode);
+		line = getFirstLine(cppCode);
 		cppCode = cppCode.replace(line, '');
 		var lineType = getLineType(line);
 		if (lineType == 'function header') {
-			let memSize = getMemSize(cpp);
+			let memSize = getMemSize(cppCode);
 			result = result + '\n' + writeFunctionHeader(line, memSize);
 			returnType = getReturnType(line);
 		} else if (lineType == 'else') {
@@ -169,7 +169,7 @@ function writeIfStatment(line, labelNum) {
 	//TODO writes the if statement condition and jump. Difficulty level: medium
 	return '';
 }
-function writeLable(lableNum) {
+function writeLabel(lableNum) {
 	return `L${lableNum}:`;
 }
 function writeJump(labelNum) {
@@ -184,11 +184,15 @@ function getReturnType(cppCode) {
 	//TODO check if return type is void or int or double. 
 	return 'void';
 }
-function memSize(cppCode) {
+function getMemSize(cppCode, memSize) {
 	//TODO return the amount of memory needed for the function. Difficulty level: hard
 	return 0;
 }
-function WriteEndOfFunction(returnType) {
+function writeFunctionHeader(cppCode){
+	//TODO writes the function header and memory declaration and pushes parameters to stack
+	return '';
+}
+function writeEndOfFunction(returnType) {
 	//TODO writes the end of function depending on the return type
 	return '';
 }
