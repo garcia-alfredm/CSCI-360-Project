@@ -117,10 +117,11 @@ function convertToAssembly(cppCode) {
 			}
 		} else if (lineType == 'for loop') {
 			scopeLvl++;
+			result = result + '\n' + writeForLoopInrementInitializer(line);
 			result = result + '\n' + writeLable(labelNum);
 			loopJumpStack.push(labelNum);
 			labelNum++;
-			result = result + '\n' + writeForLoop(line, lableNum);
+			result = result + '\n' + writeForLoopConition(line, lableNum);
 			nestedStatementStack.push('for loop');
 			labelNumberStack.push(labelNum);
 			labelNum++;
@@ -167,7 +168,7 @@ function convertToAssembly(cppCode) {
 	return result;
 }
 //writes the for loop initializer ex: for(int i = 0; i<10;i++) will write the int i = 0; part.
-function getForLoopInrement(line) {
+function writeForLoopInrementInitializer(line) {
 	var beforeRegEx = /\s*\(\s*/; 	//part before the increment initializer
 	var afterRegEx = /;.*/;		//part after the increment initializer
 	var forLoopInitializer = line.replace(part1RegEx, "").replace(part2RegEx, "");
@@ -181,6 +182,10 @@ function getForLoopInrement(line) {
 	return line.replace(part1RegEx, "").replace(part2RegEx, "");	//returns the increment part
 }
 
+//returns the for loop condition. ex: for(int i = 0; i<10;i++) will return the i<0 part.
+function writeForLoopConition(line, lableNum){
+	return "";
+}
 function hasNoOpenBracket(line) {
 	return !(/.*\{/.test(line));
 }
