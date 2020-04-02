@@ -13,13 +13,26 @@ At this point, this project is able to recognize some C++ code. Does not recogni
 Does something weird when it reaches the end of the C++ code. It has trouble removing the last line of cppCode 
 and I am forced to use substring(1) to removed unrecognized characters one by one. This is not ideal and a fix will be needed.
 */
+var scopeLvl = 0;
+var variables = [[[]]];	//3d array for variables in c++ code. Outer array is for picking the scope.
+//Inner array is the list of variable name and space name pairs in the scope
+//First array would be the global variables
+//Second array would be the variables of a function.
+//Additional arrays would be in the scope of nested statments.
+//Global variables should be stored in a label.
+//example: Line 8 in main.cpp has int i = 0;. i will be stored in DWORD PTR [rbp-4]
+//This is scopelvl 2 because int i is declaired in the for loop and cannot be accesed after the loop.
+//variables[2][0] = ["i","DWORD PTR [rbp-4]"]
+//variables[2][0][0] = "i"
+//variables[2][0][1] = "DWORD PTR [rbp-4]"
+
 function regExTest(cppCode) {
 	var result = '';
-	while (cppCode.length > 0 ) {
+	while (cppCode.length > 0) {
 		var line = getFirstLine(cppCode);
 		var lineType = getLineType(line);
 		result = result + (lineType) + ('\t') + (line) + ('\n');
-		if(line.length == 0){
+		if (line.length == 0) {
 			cppCode = cppCode.substring(1);	//This is a quick fix to reach the end of cppCode when a character is not recognized.
 		}
 		cppCode = cppCode.replace(line, '');
@@ -79,6 +92,7 @@ function convertToAssembly(cppCode) {
 		cppCode = cppCode.replace(line, '');
 		var lineType = getLineType(line);
 		if (lineType == 'function header') {
+			scopeLvl++;
 			let memSize = getMemSize(cppCode);
 			result = result + '\n' + writeFunctionHeader(line, memSize);
 			returnType = getReturnType(line);
@@ -102,6 +116,7 @@ function convertToAssembly(cppCode) {
 				nestedStatementStack.push('no brackets')
 			}
 		} else if (lineType == 'for loop') {
+			scopeLvl++;
 			result = result + '\n' + writeLable(labelNum);
 			loopJumpStack.push(labelNum);
 			labelNum++;
@@ -121,10 +136,12 @@ function convertToAssembly(cppCode) {
 					result = result + '\n' + writeIncrement(forLoopIncrentStack.pop());
 					result = result + '\n' + writeJump(loopJumpStack.pop());
 				}
+				scopeLvl--;
 				result = result + '\n' + writeLabel(labelNumberStack.pop());
 				nestedStatementStack.pop();
 			}
 		} else if (lineType == 'close bracket') {
+			scopeLvl--;
 			if (nestedStatementStack.length > 0) {
 				if (nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
 					result = result + '\n' + writeIncrement(forLoopIncrentStack.pop());
@@ -133,6 +150,7 @@ function convertToAssembly(cppCode) {
 				result = result + '\n' + writeLabel(labelNumberStack.pop());
 				nestedStatementStack.pop();
 				while (nestedStatementStack.lastIndexOf('no brackets') == (nestedStatementStack.length - 1)) {
+					scopeLvl--;
 					nestedStatementStack.pop();
 					if (nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
 						result = result + '\n' + writeIncrement(forLoopIncrentStack.pop());
@@ -148,17 +166,27 @@ function convertToAssembly(cppCode) {
 	}
 	return result;
 }
-
+//writes the for loop initializer ex: for(int i = 0; i<10;i++) will write the int i = 0; part.
 function getForLoopInrement(line) {
-	var part1RegEx = /.*;.*;\s*/; 	//part before the increment
-	var part2RegEx = /\s*\).*/;		//part after the increment
+	var beforeRegEx = /\s*\(\s*/; 	//part before the increment initializer
+	var afterRegEx = /;.*/;		//part after the increment initializer
+	var forLoopInitializer = line.replace(part1RegEx, "").replace(part2RegEx, "");
+	return writeInstruction(forLoopInitializer);
+}
+
+//returns the for loop increment. ex: for(int i = 0; i<10;i++) will return the i++ part.
+function getForLoopInrement(line) {
+	beforeRegEx = /.*;.*;\s*/; 	//part before the increment
+	afterRegEx = /\s*\).*/;		//part after the increment
 	return line.replace(part1RegEx, "").replace(part2RegEx, "");	//returns the increment part
 }
+
 function hasNoOpenBracket(line) {
 	return !(/.*\{/.test(line));
 }
 function writeIncrement(increment) {
 	//TODO write the for loop increment
+	variables[scopeLvl].push(getVariable(increment));
 	return '';
 }
 function writeInstruction(line) {
@@ -188,7 +216,7 @@ function getMemSize(cppCode, memSize) {
 	//TODO return the amount of memory needed for the function. Difficulty level: hard
 	return 0;
 }
-function writeFunctionHeader(cppCode){
+function writeFunctionHeader(cppCode) {
 	//TODO writes the function header and memory declaration and pushes parameters to stack
 	return '';
 }
