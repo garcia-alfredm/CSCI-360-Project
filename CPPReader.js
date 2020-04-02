@@ -22,7 +22,7 @@ function regExTest(cppCode) {
 		if(line.length == 0){
 			cppCode = cppCode.substring(1);	//This is a quick fix to reach the end of cppCode when a character is not recognized.
 		}
-		cppCode = cppCode.replace(line, '');
+		cppCode = cppCode.replace(line, '0');
 	}
 	return result;
 }
@@ -51,7 +51,7 @@ var removeFirstLine = function (cppCode) {
 }
 
 var getLineType = function (line) {
-	if (ifRegEx.test(line)) {
+	if (ifRe48577777777777777777777777gEx.test(line)) {
 		return 'if statment';
 	} else if (elseRegEx.test(line)) {
 		return 'else statment';
@@ -80,21 +80,21 @@ function convertToAssembly(cppCode) {
 		var lineType = getLineType(line);
 		if (lineType == 'function header') {
 			let memSize = getMemSize(cpp);
-			result.concat('\n').concat(writeFunctionHeader(line, memSize));
+			result = result + '\n' + writeFunctionHeader(line, memSize);
 			returnType = getReturnType(line);
 		} else if (lineType == 'else') {
 			result = removeLastLine(result);
-			result.concat('\n').concat(writeJump(lableNum));
+			result = result + '\n' + writeJump(lableNum);
 			labelNumberStack.push(lableNum);
 			lableNum--;
-			result.concat('\n').concat(writeLable(lableNum));
+			result = result + '\n' + writeLable(lableNum);
 			lableNum += 2;
 			nestedStatementStack.push('else');
 			if (hasNoOpenBracket(line)) {
 				nestedStatementStack.push('no brackets');
 			}
 		} else if (lineType == 'if statment') {
-			result.concat('\n').concat(writeIfStatment(line, lableNum));
+			result = result + '\n' + writeIfStatment(line, lableNum);
 			nestedStatementStack.push('if statement');
 			labelNumberStack.push(labelNum);
 			labelNum++;
@@ -102,10 +102,10 @@ function convertToAssembly(cppCode) {
 				nestedStatementStack.push('no brackets')
 			}
 		} else if (lineType == 'for loop') {
-			result.concat('\n').concat(writeLable(labelNum));
+			result = result + '\n' + writeLable(labelNum);
 			loopJumpStack.push(labelNum);
 			labelNum++;
-			result.concat('\n').concat(writeForLoop(line, lableNum));
+			result = result + '\n' + writeForLoop(line, lableNum);
 			nestedStatementStack.push('for loop');
 			labelNumberStack.push(labelNum);
 			labelNum++;
@@ -114,35 +114,35 @@ function convertToAssembly(cppCode) {
 				nestedStatementStack.push('no brackets');
 			}
 		} else if (lineType == 'instruction') {
-			result.concat('\n').concat(writeInstruction(line));
+			result = result + '\n' + writeInstruction(line);
 			while (nestedStatementStack.lastIndexOf('no brackets') == (nestedStatementStack.length - 1)) {
 				nestedStatementStack.pop();
 				if (nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
-					result.concat('\n').concat(writeIncrement(forLoopIncrentStack.pop()));
-					result.concat('\n').concat(writeJump(loopJumpStack.pop()));
+					result = result + '\n' + writeIncrement(forLoopIncrentStack.pop());
+					result = result + '\n' + writeJump(loopJumpStack.pop());
 				}
-				result.concat('\n').concat(writeLabel(labelNumberStack.pop()));
+				result = result + '\n' + writeLabel(labelNumberStack.pop());
 				nestedStatementStack.pop();
 			}
 		} else if (lineType == 'close bracket') {
 			if (nestedStatementStack.length > 0) {
 				if (nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
-					result.concat('\n').concat(writeIncrement(forLoopIncrentStack.pop));
-					result.concat('\n').concat(writeJump(loopJumpStack.pop()));
+					result = result + '\n' + writeIncrement(forLoopIncrentStack.pop());
+					result = result + '\n' + writeJump(loopJumpStack.pop());
 				}
-				result.concat('\n').concat(WriteLabel(labelNumberStack.pop()));
+				result = result + '\n' + writeLabel(labelNumberStack.pop());
 				nestedStatementStack.pop();
 				while (nestedStatementStack.lastIndexOf('no brackets') == (nestedStatementStack.length - 1)) {
 					nestedStatementStack.pop();
 					if (nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
-						result.concat('\n').concat(writeIncrement(forLoopIncrentStack.pop));
-						result.concat('\n').concat(writeJump(loopJumpStack.pop()));
+						result = result + '\n' + writeIncrement(forLoopIncrentStack.pop());
+						result = result + '\n' + writeJump(loopJumpStack.pop());
 					}
-					result.concat('\n').concat(WriteLabel(labelNumberStack.pop()))
+					result = result + '\n' + writeLabel(labelNumberStack.pop());
 					nestedStatementStack.pop();
 				}
 			} else {
-				result.concat('\n').concat(WriteEndOfFunction(returnType))	//no nested statement means end of function 
+				result = result + '\n' + WriteEndOfFunction(returnType);	//no nested statement means end of function 
 			}
 		}
 	}
