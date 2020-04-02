@@ -51,7 +51,7 @@ var removeFirstLine = function (cppCode) {
 }
 
 var getLineType = function (line) {
-	if (ifRe48577777777777777777777777gEx.test(line)) {
+	if (ifRegEx.test(line)) {
 		return 'if statment';
 	} else if (elseRegEx.test(line)) {
 		return 'else statment';
