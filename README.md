@@ -5,7 +5,8 @@
 - [x] Provide an assembly language equivalent to the C++ source code
 - [x] Draft pseudocode of the C++ to assembly algorithm
 - [ ] Annotate Xiaojie's original source code of the demo to grasp how the HTML and JS interact dynamically (In Progress)
-- [ ] Devise a JS parser algorithm to convert the C++ code into assembly language (In Progress)
+- [x] Devise a JS parser algorithm to capture the C++ code (using regex)
+- [ ] Devise a JS conversion code to convert C++ code to assembly language equivalent (In Progress)
 
 ## Unique Specifications
 - We assume `in` and `out` as pseudo assembly level commands to read keyboard input (equivalent to `cin` and `cout` in C++)
