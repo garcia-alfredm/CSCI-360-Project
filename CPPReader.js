@@ -92,7 +92,7 @@ function convertToAssembly(cppCode) {
     if (lineType == 'function header') {
 			console.log(line);
       let memSize = getMemSize(cppCode);
-			console.log(memSize);
+			//console.log(memSize);
       result.concat('\n').concat(writeFunctionHeader(line, memSize));
       returnType = getReturnType(line);
     } else if (lineType == 'else') {
