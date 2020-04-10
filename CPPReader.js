@@ -147,11 +147,13 @@ function convertToAssembly(cppCode) {
 					result = result + '\n' + writeIncrement(forLoopIncrentStack.pop());
 					result = result + '\n' + writeJump(loopJumpStack.pop());
 				}
+				variables[scopeLvl] = [[]];	//clears variables in scope
 				scopeLvl--;
 				result = result + '\n' + writeLabel(labelNumberStack.pop());
 				nestedStatementStack.pop();
 			}
 		} else if (lineType == 'close bracket') {
+			variables[scopeLvl] = [[]]; //clears variables in scope
 			scopeLvl--;
 			if (nestedStatementStack.length > 0) {
 				if (nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
@@ -161,6 +163,7 @@ function convertToAssembly(cppCode) {
 				result = result + '\n' + writeLabel(labelNumberStack.pop());
 				nestedStatementStack.pop();
 				while (nestedStatementStack.lastIndexOf('no brackets') == (nestedStatementStack.length - 1)) {
+					variables[scopeLvl] = [[]]; //clears variables in scope
 					scopeLvl--;
 					nestedStatementStack.pop();
 					if (nestedStatementStack.lastIndexOf('for loop') == (nestedStatementStack.length - 1)) {
@@ -213,23 +216,26 @@ function writeInstruction(line) {
 		var splitLine = line.split("=");
 		var leftPart = splitLine[0];
 		var rightPart = splitLine[1];
+		let split = leftPart.split(/\s+/);		//splits the left part of the '=' into an array of words.
+		let varName = split.pop();				//last word in split is the variable name.
 		if (leftPart.test(/\w+\s+\w+/)) {	//checks if variable is being declared
-			let split = leftPart.split(/\s+/);		//splits the left part of the '=' into an array of words.
-			let varName = split.pop();				//last word in split is the variable name.
 			let varSize = getVarSize(split.pop());	//next last word in split is the data type.
 			let offset = getLastVarOffset() + varSize;
 			variables[scopeLvl].push([varName, `DWORD PTR [rbp-${offset}]`, varSize]); //adds the variable for use.
 		}
 		//TODO finish implelemnting right side of '=' instruction.
+		//will first ignore order of opperations and parenthises. Will be fixed later.
+		
 	}
 	return '';
 }
-
+//var declaration line may look like "int i" or "const double i". 
+//The last word is the variable name and the second to last word is the data type.
 function getVarSize(varDeclarationLine) {
-	var split = varDeclarationLine.split(/\s+/);
+	var split = varDeclarationLine.split(/\s+/);	//splits the line into an array of words.
 	var length = split.length;
-	let type = split[length - 2];
-	if (type == 'double') {
+	let type = split[length - 2];	//gets the second to last word
+	if (type == 'double') {			//other checks for data types may be added here.
 		return 8;
 	}
 	else {
@@ -242,8 +248,8 @@ function getLastVarOffset() {
 	var scope = scopeLvl;
 	while (scope > 0) {
 		variables[scopeLvl].forEach(variable => {
-			if (variable[3] > max) {
-				max = variable[3];
+			if (variable[2] > max) {
+				max = variable[2];
 			}
 		});
 		scope--;
