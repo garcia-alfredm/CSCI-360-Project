@@ -22,30 +22,31 @@ var variables = [[[]]];	//3d array for variables in c++ code. Outer array is for
 //Global variables should be stored in a label.
 //example: Line 8 in main.cpp has int i = 0;. i will be stored in DWORD PTR [rbp-4]
 //This is scopelvl 2 because int i is declaired in the for loop and cannot be accesed after the loop.
-//variables[2][0] = ["i","DWORD PTR [rbp-4]"]
-//variables[2][0][0] = "i"
-//variables[2][0][1] = "DWORD PTR [rbp-4]"
+//variables[2][0] = ["i","DWORD PTR [rbp-4]", 4]
+//variables[2][0][0] = "i"	(variable name)
+//variables[2][0][1] = "DWORD PTR [rbp-4]"	(asembly code)
+//variables[2][0][2] = 4 	(size)
 
 // @cppCode: called from demo.js testRegExClick() function, contains the C++ code in index.html
 function regExTest(cppCode) {
-  var result = '';
-  // console.log(cppCode.length);
-  // console.log(cppCode);
-  while (cppCode.length > 0 /*&& lineType != "empty"*/ ) {
-    var line = getFirstLine(cppCode);
-    //console.log(line);
-    var lineType = getLineType(line);
-    //var lineType = "";
-    if (lineType === "empty") {
-      break;
-    }
-    result = result + (lineType) + ('\t') + (line) + ('\n');
-    // if(line.length == 0){
-    // 	cppCode = cppCode.substring(1);	//This is a quick fix to reach the end of cppCode when a character is not recognized.
-    // }
-    cppCode = cppCode.replace(line, '');
-  }
-  return result;
+	var result = '';
+	// console.log(cppCode.length);
+	// console.log(cppCode);
+	while (cppCode.length > 0 /*&& lineType != "empty"*/) {
+		var line = getFirstLine(cppCode);
+		//console.log(line);
+		var lineType = getLineType(line);
+		//var lineType = "";
+		if (lineType === "empty") {
+			break;
+		}
+		result = result + (lineType) + ('\t') + (line) + ('\n');
+		// if(line.length == 0){
+		// 	cppCode = cppCode.substring(1);	//This is a quick fix to reach the end of cppCode when a character is not recognized.
+		// }
+		cppCode = cppCode.replace(line, '');
+	}
+	return result;
 }
 
 var getFirstLine = function (cppCode) {
@@ -84,7 +85,8 @@ var getLineType = function (line) {
 		return 'close bracket';
 	} else if (instructionRegEx.test(line)) {
 		return 'instruction';
-	} else return 'empty';
+	} else return 'empty'; 	//returns 'empty' if nothing is recognized. Does not mean that line is empty. 
+	//There should be a check before for an empty line before running this method.
 }
 function convertToAssembly(cppCode) {
 	var result = '';
@@ -191,7 +193,7 @@ function getForLoopInrement(line) {
 }
 
 //returns the for loop condition. ex: for(int i = 0; i<10;i++) will return the i<0 part.
-function writeForLoopConition(line, lableNum){
+function writeForLoopConition(line, lableNum) {
 	return "";
 }
 function hasNoOpenBracket(line) {
@@ -202,24 +204,71 @@ function writeIncrement(increment) {
 	variables[scopeLvl].push(getVariable(increment));
 	return '';
 }
+//remove leading whitespace before calling
 function writeInstruction(line) {
 	//TODO writes an instruction in assembly. Difficulty level hard.
+	var instructionType = getInstructionType(line);
+	var a = "a";
+	if (line.test('=')) {	//checks for assignment instruction
+		var splitLine = line.split("=");
+		var leftPart = splitLine[0];
+		var rightPart = splitLine[1];
+		if (leftPart.test(/\w+\s+\w+/)) {	//checks if variable is being declared
+			let split = leftPart.split(/\s+/);		//splits the left part of the '=' into an array of words.
+			let varName = split.pop();				//last word in split is the variable name.
+			let varSize = getVarSize(split.pop());	//next last word in split is the data type.
+			let offset = getLastVarOffset() + varSize;
+			variables[scopeLvl].push([varName, `DWORD PTR [rbp-${offset}]`, varSize]); //adds the variable name to the variables in the scope.
+		}
+		//TODO finish implelemnting right side of '=' instruction.
+	}
 	return '';
 }
+
+function getVarSize(varDeclarationLine) {
+	var split = varDeclarationLine.split(/\s+/);
+	var length = split.length;
+	let type = split[length - 2];
+	if (type == 'double') {
+		return 8;
+	}
+	else {
+		return 4;
+	}
+}
+function getLastVarOffset() {
+	let max = 0;
+	variables[scopeLvl].forEach(variable => {
+		if (variable[3] > max) {
+			max = variable[3];
+		}
+	});
+	return max;
+}
+
 function writeIfStatment(line, labelNum) {
 	//TODO writes the if statement condition and jump. Difficulty level: medium
 	return '';
 }
 function writeLabel(lableNum) {
-	return `L${lableNum}:`;
+	return `L${lableNum}:\n`;
 }
 function writeJump(labelNum) {
-	//TODO write a jump instruction to the lable number
-	return '';
+	//write a jump instruction to the lable number
+	return `JMP L${lableNum}\\n`;
 }
 function removeLastLine(asmCode) {
-	//TODO removes the last line of assembly code
-	return '';
+	//removes the last line of assembly code
+	let index = asmCode.length - 1;
+	while (index > 0) {
+		index--;	//skips the last character of asmcode which should be '\n' and waits for the next '\n' charcter.
+		if (asmCode[index] == '\n') {
+			index--;	//index of end of prefious line
+			asmCode = asmCode.substring(0, index);	//substring without last line
+			index = 0;	//set index to 0 to end loop
+		}
+	}
+	return asmCode;
 }
 function getReturnType(cppCode) {
 	//TODO check if return type is void or int or double.
@@ -227,16 +276,17 @@ function getReturnType(cppCode) {
 }
 
 function getMemSize(cppCode) {
-  //TODO return the amount of memory needed for the function. Difficulty level: hard
-	var findInitializedArray = /[A-Za-z]+\[\d+\]/;
+	//TODO return the amount of memory needed for the function. Counts all memory needed for all variables and parameters and arrays of any size.
+	var findInitializedArray = /[A-Za-z]+\[\d+\]/; //Code below finds memory size needed for an array up to ten ints.
 	var foundArray = cppCode.match(findInitializedArray);
 	// console.log(foundArray[0]);
 	var determineMemory = foundArray[0].match(/\d+/)[0];
 	var memoryNeeded = 0;
-	if(determineMemory == (0 || 1)){memoryNeeded = 16;}
-	else if (determineMemory == 3 || determineMemory == 4 || determineMemory == 5 || determineMemory == 6) {memoryNeeded = 16 * 2;}
-	else if (determineMemory == 7 || determineMemory == 8 || determineMemory == 9 || determineMemory == 10)	{memoryNeeded = 16 * 3;}
-  return memoryNeeded;
+	if (determineMemory == (0 || 1)) { memoryNeeded = 16; }
+	else if (determineMemory == 3 || determineMemory == 4 || determineMemory == 5 || determineMemory == 6) { memoryNeeded = 16 * 2; }
+	else if (determineMemory == 7 || determineMemory == 8 || determineMemory == 9 || determineMemory == 10) { memoryNeeded = 16 * 3; }
+	//end of memory size needed for an array up to ten ints.
+	return memoryNeeded;
 }
 
 function writeFunctionHeader(cppCode) {
