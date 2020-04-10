@@ -218,7 +218,7 @@ function writeInstruction(line) {
 			let varName = split.pop();				//last word in split is the variable name.
 			let varSize = getVarSize(split.pop());	//next last word in split is the data type.
 			let offset = getLastVarOffset() + varSize;
-			variables[scopeLvl].push([varName, `DWORD PTR [rbp-${offset}]`, varSize]); //adds the variable name to the variables in the scope.
+			variables[scopeLvl].push([varName, `DWORD PTR [rbp-${offset}]`, varSize]); //adds the variable for use.
 		}
 		//TODO finish implelemnting right side of '=' instruction.
 	}
@@ -236,13 +236,19 @@ function getVarSize(varDeclarationLine) {
 		return 4;
 	}
 }
+//checks the last memory space used in the local scope level. Reminder: scopeLvl 0 is for global variables. 
 function getLastVarOffset() {
 	let max = 0;
-	variables[scopeLvl].forEach(variable => {
-		if (variable[3] > max) {
-			max = variable[3];
-		}
-	});
+	var scope = scopeLvl;
+	while (scope > 0) {
+		variables[scopeLvl].forEach(variable => {
+			if (variable[3] > max) {
+				max = variable[3];
+			}
+		});
+		scope--;
+	}
+
 	return max;
 }
 
