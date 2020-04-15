@@ -225,6 +225,7 @@ function writeInstruction(line) {
 		}
 		//TODO finish implelemnting right side of '=' instruction.
 		//will first ignore order of opperations and parenthises. Will be fixed later.
+		var divOp = rightPart.split(/[\/\+\-\*]/);
 		
 	}
 	return '';
